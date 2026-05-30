@@ -16,8 +16,11 @@ FROM nousresearch/hermes-agent:latest
 # public Railway domain — only the edge service is public.
 # HERMES_DASHBOARD_TUI=1 adds the embedded "Chat" tab (the full Hermes TUI in the
 # browser). Without it the dashboard is admin/observability only — no chat box.
+# Bind to :: (IPv6 dual-stack) so the dashboard is reachable BOTH on Railway's
+# public proxy AND over Railway's private network (which is IPv6-only) from the
+# edge proxy at hermes.railway.internal:9119.
 ENV HERMES_DASHBOARD=1 \
-    HERMES_DASHBOARD_HOST=0.0.0.0 \
+    HERMES_DASHBOARD_HOST=:: \
     HERMES_DASHBOARD_PORT=9119 \
     HERMES_DASHBOARD_INSECURE=1 \
     HERMES_DASHBOARD_TUI=1 \
