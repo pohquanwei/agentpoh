@@ -1,0 +1,39 @@
+# Edge proxy in front of the (private) Hermes dashboard.
+# Provides: (1) IP allowlist, (2) password gate (HTTP basic auth),
+# then reverse-proxies to Hermes over Railway's private network.
+#
+# All values come from Railway env vars on THIS edge service:
+#   PORT            - injected by Railway (the public port Caddy listens on)
+#   ALLOWED_IPS     - space-separated CIDRs, e.g. "1.2.3.4/32 10.0.0.0/8"
+#   BASIC_AUTH_USER - login username (default: admin)
+#   BASIC_AUTH_HASH - bcrypt hash of the password (see edge/README notes)
+#   HERMES_UPSTREAM - private address of Hermes dashboard, e.g.
+#                     hermes.railway.internal:9119
+#   TRUSTED_PROXIES - whose X-Forwarded-For to trust when resolving client IP.
+#                     Behind Cloudflare: set to Cloudflare's IP ranges (reliable).
+#                     Railway-only: defaults to 0.0.0.0/0 (works, but XFF is
+#                     spoofable without Cloudflare — see README security note).
+
+{
+	admin off
+	auto_https off
+	servers {
+		trusted_proxies static {$TRUSTED_PROXIES:0.0.0.0/0}
+	}
+}
+
+:{$PORT:8080} {
+	route {
+		# 1) IP allowlist — anything not in ALLOWED_IPS gets 403.
+		@blocked not client_ip {$ALLOWED_IPS}
+		respond @blocked "Forbidden: your IP is not allowed" 403
+
+		# 2) Password gate.
+		basic_auth {
+			{$BASIC_AUTH_USER:admin} {$BASIC_AUTH_HASH}
+		}
+
+		# 3) Forward to the private Hermes dashboard.
+		reverse_proxy {$HERMES_UPSTREAM}
+	}
+}

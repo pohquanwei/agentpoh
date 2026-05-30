@@ -1,0 +1,11 @@
+# Railway build/deploy config. Tells Railway to build from our Dockerfile and
+# keep the service running. The public domain should target port 9119 (the
+# dashboard) — set that in Railway → Settings → Networking when you add a domain.
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+restartPolicyType = "always"
+restartPolicyMaxRetries = 10

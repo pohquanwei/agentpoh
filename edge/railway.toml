@@ -1,0 +1,8 @@
+# Railway config for the EDGE service (set this service's Root Directory = "edge").
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+restartPolicyType = "always"
+restartPolicyMaxRetries = 10
