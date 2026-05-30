@@ -14,10 +14,13 @@ FROM nousresearch/hermes-agent:latest
 # that gate off here ON PURPOSE because authentication + IP allowlisting are done
 # by the Caddy edge service (see ./edge). This Hermes service must NOT be given a
 # public Railway domain — only the edge service is public.
+# HERMES_DASHBOARD_TUI=1 adds the embedded "Chat" tab (the full Hermes TUI in the
+# browser). Without it the dashboard is admin/observability only — no chat box.
 ENV HERMES_DASHBOARD=1 \
     HERMES_DASHBOARD_HOST=0.0.0.0 \
     HERMES_DASHBOARD_PORT=9119 \
     HERMES_DASHBOARD_INSECURE=1 \
+    HERMES_DASHBOARD_TUI=1 \
     API_SERVER_HOST=0.0.0.0 \
     API_SERVER_CORS_ORIGINS=*
 
