@@ -1,2 +1,7 @@
 .DS_Store
 *.log
+
+# Never commit secrets — they live in Railway Variables / the volume
+.env
+*.env
+edge/.env
